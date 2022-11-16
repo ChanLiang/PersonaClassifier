@@ -2,15 +2,11 @@
 
 This repository contains the source code and trained model for RoBERTa finetuned on DNLI dataset. 
 
-<!--See more details on our [project page](https://www.microsoft.com/en-us/research/project/large-scale-pretraining-for-response-generation/)-->
-
 The repository is developed based on [D3](https://github.com/caoyu-noob/D3).
 
 
 
 ## Setup & Installation (TL;DR)
-
-
 
 #### Environmental requirements
 Note: The script below may not be sufficient and missing packages need to be configured manually.
