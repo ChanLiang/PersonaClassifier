@@ -12,7 +12,8 @@ The repository is developed based on [D3](https://github.com/caoyu-noob/D3).
 
 
 
-#### Environment
+#### Environmental requirements
+Note: The script below may not be sufficient and missing packages need to be configured manually.
 1. python == 3.7.0
 2. torch==1.5.0
 3. transformers==3.1.0
@@ -23,39 +24,38 @@ The repository is developed based on [D3](https://github.com/caoyu-noob/D3).
 
 ## Pipeline details
 
-#### Prepare models
-At first, we have to get all trained models we need for data manipulation in experiments.
-You need go to `./data_manipulation/prepare_model`.
+#### 1. Prepare models
 
-##### NLI model for evaluating persona consistency
-You need to download [DialogueNLI dataset](https://wellecks.github.io/dialogue_nli/)
-and put it under this directory. Also, download large size [RoBERTa MNLI model](https://huggingface.co/roberta-large-mnli)
-and put it under this directory, renaming the document as `roberta_mnli/`.
+Just download the finetuned [NLI model](https://drive.google.com/file/d/1QnT8V2Yj4Zl2yW2rnQIi2p56I_wbN3Ee/view?usp=sharing) and put it to ./persona_nli .
 
-Then you can train the NLI model using this dataset using script `train_nli_model.py`.
+Note: This model is a [RoBERTa large MNLI model](https://huggingface.co/roberta-large-mnli) finetuned on the [DialogueNLI dataset](https://wellecks.github.io/dialogue_nli/).
 
-After obtain the trained best model, you need to renamed the file `best_model.bin` as `pytorch_model.bin` for the following 
-use. Define the path that saves the trained NLI model for persona consistency as `PERSONA_NLI`.
+#### 2. Data Preparation
+##### Evaluating persona consistency
+See example data in ./data/consistency_calculation
 
-We also provide our trained [NLI model](https://drive.google.com/file/d/1QnT8V2Yj4Zl2yW2rnQIi2p56I_wbN3Ee/view?usp=sharing) 
-for downloading.
+##### Predicting persona label
+See example data in ./data/persona_labeling
 
 
-#### Calculate consistency score
+#### 3. Evaluating persona consistency
 
 ```bash
-bash consistency.sh # pipeline
+bash consistency_pipeline.sh
 or
 python cal_consistency_score.py 
 ```
 
 
-#### Predict persona label
+#### 4. Predicting persona label
 ```bash
-bash cal_persona_label.py
+bash persona_label_pipeline.sh
+or
+bash cal_persona_label.py --params...
+bash get_persona_labeled_dataset.py --params...
 ```
 
 
-### Data Preparation
-See example data in ./data
+
+
 
