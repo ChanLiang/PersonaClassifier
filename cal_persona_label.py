@@ -17,8 +17,10 @@ NLI_MODEL_PATH = './persona_nli'
 input_file = argv[1]
 # The output file that saves the NLI logits given the train samples
 output_file = argv[2]
+bz = int(argv[3].strip())
+gpu = argv[4].strip()
 
-def get_dataloader(input_examples, tokenizer, device):
+def get_dataloader(input_examples, tokenizer, device, batch_size=512):
     features = convert_examples_to_features(
         input_examples,
         tokenizer,
@@ -29,7 +31,7 @@ def get_dataloader(input_examples, tokenizer, device):
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long).to(device)
     all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long).to(device)
     dataset = TensorDataset(all_input_ids, all_attention_mask)
-    dataloader = DataLoader(dataset, batch_size=6)
+    dataloader = DataLoader(dataset, batch_size=batch_size)
     return dataloader
 
 
@@ -83,9 +85,8 @@ def read_json_data(input_file):
 
 # load tokenizer and model (single gpu is enough)
 tokenizer = AutoTokenizer.from_pretrained(NLI_MODEL_PATH)
-
 model = AutoModelForSequenceClassification.from_pretrained(NLI_MODEL_PATH)
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device(f'cuda:{gpu}') if torch.cuda.is_available() else torch.device('cpu')
 model.to(device)
 model.eval()
 
@@ -94,7 +95,7 @@ pred_results = []
 if '.json' in input_file: # json file 
     all_logits = None
     input_examples = read_json_data(input_file)
-    train_dataloader = get_dataloader(input_examples, tokenizer, device)
+    train_dataloader = get_dataloader(input_examples, tokenizer, device, bz)
     with torch.no_grad():
         for batch in tqdm(train_dataloader):
             inputs = {"input_ids": batch[0], "attention_mask": batch[1]}
@@ -126,17 +127,20 @@ else: # txt file (persona raw text file)
                 for batch in train_dataloader:
                     inputs = {"input_ids": batch[0], "attention_mask": batch[1]}
                     outputs = model(**inputs)
-                    if all_logits is None:
+                    if all_logits is None: 
                         all_logits = outputs[0].detach()
                     else:
                         all_logits = torch.cat((all_logits, outputs[0].detach()), dim=0)
+                # dimension: [n, 3] -> [n]
                 results = torch.argmax(all_logits, dim=1)
-                for j, r in enumerate(results): # a persona entry may entails None, one or severl dialog responses
-                    if r == 2:
-                        entailed_results.append((persona, cur_dialogs[j]))
+                for id, res in enumerate(results): # a persona entry may entails None, one or severl dialog responses
+                    if res == 2: # entail
+                        entailed_results.append((persona, cur_dialogs[id]))
                 cur_pred_results.append(all_logits.cpu())
-            pred_results.append(cur_pred_results) # [num_dialogs, 5, num_turns]
+            # dimension: num_dialogs x matched persona-uttr pair in the each dialog
+            pred_results.append(cur_pred_results) 
         
+    
+    torch.save(pred_results, f'{output_file}/entailment_scores.bin')
     with open(f'{output_file}/entailed_sentences.json', 'w') as f:
         json.dump(entailed_results, f)
-    torch.save(pred_results, f'{output_file}/entailment_scores.bin')
