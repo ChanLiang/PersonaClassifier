@@ -57,7 +57,7 @@ python count_label.py output_file
 ```
 
 ## Some counting results
-I found that the model is quite sure that 50% responses don't use any persona as its predicted class distribution is 'sharp'———— the probability of the predicted class is more than an order of magnitude larger than the other two classes.
+Interestingly, I found that the model is quite sure that 50% responses don't use any persona as its predicted class distribution is 'sharp'---- the probability of the predicted class is more than an order of magnitude larger than the other two classes.
 
 ```python
 (D3) bash-4.2$ python count_label.py predictions/test/output-wo-th
