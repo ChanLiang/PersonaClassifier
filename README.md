@@ -66,11 +66,11 @@ I found that the model is quite sure that 50% responses don't use any persona as
 
 (D3) bash-4.2$ python count_label.py predictions/train/output-wo-th
 [33159, 8914, 7741, 6983, 6224, 2698]
-[0.50, 0.134, 0.118, 0.10625542080676821, 0.09470624933428688, 0.04105357659124454]
+[0.50, 0.134, 0.118, 0.106, 0.095, 0.041]
 
 (D3) bash-4.2$ python count_label.py predictions/valid/output-wo-th
 [3818, 1129, 958, 821, 752, 323]
-[0.4894244327650301, 0.1447250352518908, 0.12280476861940777, 0.10524291757466991, 0.09639789770542238, 0.04140494808357903]![image](https://user-
+[0.49, 0.14, 0.12, 0.11, 0.096, 0.041]
 ```
 
 
