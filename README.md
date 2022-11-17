@@ -51,6 +51,27 @@ bash cal_persona_label.py --params...
 bash get_persona_labeled_dataset.py --params...
 ```
 
+#### 5. Counting the persona label
+```bash
+python count_label.py output_file
+```
+
+## Some counting results
+I found that the model is quite sure that 50% responses don't use any persona as its predicted class distribution is 'sharp'———— the probability of the predicted class is more than an order of magnitude larger than the other two classes.
+
+```python
+(D3) bash-4.2$ python count_label.py predictions/test/output-wo-th
+[3979, 925, 849, 746, 698, 315]
+[0.53, 0.12, 0.11, 0.099, 0.092, 0.042]
+
+(D3) bash-4.2$ python count_label.py predictions/train/output-wo-th
+[33159, 8914, 7741, 6983, 6224, 2698]
+[0.50, 0.134, 0.118, 0.10625542080676821, 0.09470624933428688, 0.04105357659124454]
+
+(D3) bash-4.2$ python count_label.py predictions/valid/output-wo-th
+[3818, 1129, 958, 821, 752, 323]
+[0.4894244327650301, 0.1447250352518908, 0.12280476861940777, 0.10524291757466991, 0.09639789770542238, 0.04140494808357903]![image](https://user-
+```
 
 
 
