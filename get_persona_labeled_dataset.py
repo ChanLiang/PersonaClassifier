@@ -42,6 +42,8 @@ input_file = argv[1]
 logits_file = argv[2]
 # The output json file 
 output_file = argv[3]
+threshold = argv[4].strip()
+
 
 if '.json' in input_file:
     with open(input_file, 'r') as f:
@@ -97,13 +99,22 @@ else:
             res = np.argmax(p, axis=-1)
             res = list(res)
             # print (res) # [tensor(1), tensor(2), tensor(1), tensor(1), tensor(1), tensor(1), tensor(1), tensor(1)]
-            # 把一部分置信度不高(<TH)的entail抹掉，改成neural
+            # （a）把一部分置信度不高(<TH)的entail抹掉，改成neural (通常正确类别概率>>另外两个类别，3-4个数量级)
+            if threshold == 'True':
+                for i, r in enumerate(res):
+                    if r == 2: 
+                        # softmax = np.exp(p[i]) / np.sum(np.exp(p[i]))
+                        softmax = torch.exp(p[i]) / torch.sum(torch.exp(p[i]))
+                        if softmax[2] < TH:
+                            res[i] = 1
+            # （b）把一部分neural里边置信度和entail相近的，换成entail，并且记录下来这批数据（human review是否合理）
             # for i, r in enumerate(res):
-            #     if r == 2: 
-            #         # softmax = np.exp(p[i]) / np.sum(np.exp(p[i]))
+            #     if r == 1: 
             #         softmax = torch.exp(p[i]) / torch.sum(torch.exp(p[i]))
-            #         if softmax[2] < TH:
-            #             res[i] = 1
+            #         # assert torch.sum(softmax) == torch.tensor(1.0000), (torch.sum(softmax), softmax)
+            #         # if softmax[2] > softmax[0] and (softmax[1] - softmax[2] < 0.25):
+            #         if softmax[2] > softmax[0] and (softmax[1]/softmax[2] < 10) and (softmax[2]/softmax[0] > 10):
+            #             res[i] = 2
             cur_entail_result.append(list(res))
         entail_result.append(cur_entail_result)
 
