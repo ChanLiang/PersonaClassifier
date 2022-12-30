@@ -35,7 +35,7 @@ See example data in ./data/persona_labeling
 
 
 #### 3. Evaluating persona consistency
-
+Goal: To get the confident score of a certain class.
 ```bash
 bash consistency_pipeline.sh
 or
@@ -44,6 +44,7 @@ python cal_consistency_score.py
 
 
 #### 4. Predicting persona label
+Goal: To get the class with the highest confident score.
 ```bash
 bash persona_label_pipeline.sh
 or
